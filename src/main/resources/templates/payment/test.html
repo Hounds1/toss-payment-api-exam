@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+
+    <style>
+        body {
+            width: 1200px;
+            margin: auto;
+        }
+        .hidden_button {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <span>결제금액 : </span>
+        <span id="price_area">500</span>
+        <span id="itemName">예제 아이템</span>
+        <button onclick=getPaymentWidget()>위젯호출</button>
+    </section>
+
+    <section>
+        <div id="target_area">
+        </div>
+        <div id="button_area">
+            <button onclick=reqPayment() id="payment_button" class="hidden_button">결제하기</button>
+        </div>
+    </section>
+
+    <script>
+        const clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+        const paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS); // 비회원 결제
+
+        function getPaymentWidget() {
+            const txtPrice = document.getElementById('price_area').textContent;
+            const price = parseInt(txtPrice);
+
+            paymentWidget.renderPaymentMethods('#target_area', price);
+
+            document.getElementById('payment_button').classList.remove('hidden_button');
+        }
+
+        function reqPayment() {
+            const uuid = self.crypto.randomUUID();
+            const itemsName = document.querySelector('#itemName').textContent;
+            paymentWidget.requestPayment({
+                orderId: uuid,
+                orderName: itemsName,
+                successUrl: 'http://localhost:9090/payment/success',
+                failUrl: 'http://localhost:9090/payment/fail',
+                customerEmail: 'customer123@gmail.com',
+                customerName: 'ANON'
+            });
+        }
+    </script>
+</body>
+</html>
